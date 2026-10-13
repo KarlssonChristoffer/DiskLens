@@ -1,0 +1,329 @@
+/* Windows 11 / Fluent 2 design tokens. The window itself has a Mica
+   backdrop, so surfaces are translucent layers on top of it. */
+
+:root {
+  color-scheme: light dark;
+  --accent-base: #0078d4; /* replaced by the user's Windows accent at startup */
+
+  --font: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --mono: "Cascadia Mono", Consolas, monospace;
+
+  --radius-control: 4px;
+  --radius-surface: 8px;
+  --row: 32px;
+
+  /* Light theme */
+  --text-1: rgba(0, 0, 0, 0.896);
+  --text-2: rgba(0, 0, 0, 0.606);
+  --text-3: rgba(0, 0, 0, 0.446);
+  --text-disabled: rgba(0, 0, 0, 0.361);
+  --accent: color-mix(in srgb, var(--accent-base) 82%, black);
+  --accent-hover: color-mix(in srgb, var(--accent) 90%, transparent);
+  --accent-text: color-mix(in srgb, var(--accent-base) 70%, black);
+  --on-accent: #ffffff;
+  --accent-subtle: color-mix(in srgb, var(--accent-base) 12%, transparent);
+
+  --fill-control: rgba(255, 255, 255, 0.7);
+  --fill-control-hover: rgba(249, 249, 249, 0.5);
+  --fill-control-pressed: rgba(249, 249, 249, 0.3);
+  --fill-subtle-hover: rgba(0, 0, 0, 0.037);
+  --fill-subtle-pressed: rgba(0, 0, 0, 0.024);
+  --fill-selected: rgba(0, 0, 0, 0.055);
+  --stroke-control: rgba(0, 0, 0, 0.0578);
+  --stroke-control-strong: rgba(0, 0, 0, 0.1622);
+  --stroke-divider: rgba(0, 0, 0, 0.0803);
+  --stroke-surface: rgba(0, 0, 0, 0.0578);
+
+  --layer: rgba(255, 255, 255, 0.5);
+  --card: rgba(255, 255, 255, 0.7);
+  --card-solid: #fbfbfb;
+  --flyout: rgba(252, 252, 252, 0.92);
+  --smoke: rgba(0, 0, 0, 0.3);
+  --track: rgba(0, 0, 0, 0.08);
+  --danger: #c42b1c;
+  --danger-subtle: rgba(196, 43, 28, 0.1);
+  --success: #0f7b0f;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.19), 0 2px 21px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-1: #ffffff;
+    --text-2: rgba(255, 255, 255, 0.786);
+    --text-3: rgba(255, 255, 255, 0.544);
+    --text-disabled: rgba(255, 255, 255, 0.363);
+    --accent: color-mix(in srgb, var(--accent-base) 55%, white);
+    --accent-hover: color-mix(in srgb, var(--accent) 90%, transparent);
+    --accent-text: color-mix(in srgb, var(--accent-base) 45%, white);
+    --on-accent: #000000;
+    --accent-subtle: color-mix(in srgb, var(--accent-base) 22%, transparent);
+
+    --fill-control: rgba(255, 255, 255, 0.0605);
+    --fill-control-hover: rgba(255, 255, 255, 0.0837);
+    --fill-control-pressed: rgba(255, 255, 255, 0.0326);
+    --fill-subtle-hover: rgba(255, 255, 255, 0.0605);
+    --fill-subtle-pressed: rgba(255, 255, 255, 0.0419);
+    --fill-selected: rgba(255, 255, 255, 0.0837);
+    --stroke-control: rgba(255, 255, 255, 0.0698);
+    --stroke-control-strong: rgba(255, 255, 255, 0.1);
+    --stroke-divider: rgba(255, 255, 255, 0.0837);
+    --stroke-surface: rgba(0, 0, 0, 0.2);
+
+    --layer: rgba(58, 58, 58, 0.3);
+    --card: rgba(255, 255, 255, 0.0512);
+    --card-solid: #2b2b2b;
+    --flyout: rgba(44, 44, 44, 0.96);
+    --smoke: rgba(0, 0, 0, 0.45);
+    --track: rgba(255, 255, 255, 0.1);
+    --danger: #ff99a4;
+    --danger-subtle: rgba(255, 153, 164, 0.12);
+    --success: #6ccb5f;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.26), 0 0 2px rgba(0, 0, 0, 0.4);
+    --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.37), 0 2px 21px rgba(0, 0, 0, 0.37);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  /* Transparent so the window's Mica backdrop shows through. */
+  background: transparent;
+  color: var(--text-1);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: default;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-1);
+  outline-offset: 1px;
+  border-radius: var(--radius-control);
+}
+
+.caption {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-2);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Buttons ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 5px 12px 6px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--stroke-control);
+  border-bottom-color: var(--stroke-control-strong);
+  background: var(--fill-control);
+  color: var(--text-1);
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--fill-control-hover);
+}
+.btn:active {
+  background: var(--fill-control-pressed);
+  color: var(--text-2);
+  border-bottom-color: var(--stroke-control);
+}
+.btn:disabled {
+  color: var(--text-disabled);
+  background: var(--fill-control-pressed);
+  border-bottom-color: var(--stroke-control);
+}
+.btn.accent {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(0, 0, 0, 0.4);
+}
+.btn.accent:hover {
+  background: var(--accent-hover);
+}
+.btn.accent:active {
+  color: color-mix(in srgb, var(--on-accent) 70%, transparent);
+}
+.btn.accent:disabled,
+.btn.danger:disabled {
+  background: var(--fill-control-pressed);
+  color: var(--text-disabled);
+  border-color: var(--stroke-control);
+}
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: transparent;
+}
+.btn.subtle {
+  background: transparent;
+  border-color: transparent;
+}
+.btn.subtle:hover {
+  background: var(--fill-subtle-hover);
+}
+.btn.subtle:active {
+  background: var(--fill-subtle-pressed);
+}
+.btn.icon {
+  padding: 0;
+  width: 32px;
+}
+
+/* ---- Segmented control ---- */
+
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border-radius: var(--radius-control);
+  background: var(--fill-subtle-pressed);
+  border: 1px solid var(--stroke-control);
+}
+.segmented button {
+  border: 0;
+  background: transparent;
+  border-radius: 3px;
+  padding: 3px 10px;
+  color: var(--text-2);
+}
+.segmented button:hover {
+  background: var(--fill-subtle-hover);
+  color: var(--text-1);
+}
+.segmented button.on {
+  background: var(--fill-control);
+  color: var(--text-1);
+  box-shadow: 0 0 0 1px var(--stroke-control), var(--shadow-card);
+}
+
+/* ---- Inputs ---- */
+
+.input {
+  min-height: 32px;
+  padding: 5px 10px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--stroke-control);
+  border-bottom-color: var(--stroke-control-strong);
+  background: var(--fill-control);
+  outline: none;
+}
+.input:focus {
+  border-bottom: 2px solid var(--accent);
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+  width: 100%;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* ---- Surfaces ---- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--stroke-surface);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.flyout {
+  background: var(--flyout);
+  backdrop-filter: blur(30px) saturate(1.25);
+  border: 1px solid var(--stroke-surface);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-flyout);
+}
+
+/* ---- Usage bars ---- */
+
+.bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--track);
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ---- Scrollbars ---- */
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 4px solid transparent;
+  background-clip: content-box;
+  border-radius: 6px;
+}
+:hover::-webkit-scrollbar-thumb {
+  background-color: var(--text-3);
+}
+::-webkit-scrollbar-thumb:hover {
+  border-width: 3px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ---- Progress ring ---- */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ring {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--track);
+  border-top-color: var(--accent);
+  animation: spin 0.9s linear infinite;
+}

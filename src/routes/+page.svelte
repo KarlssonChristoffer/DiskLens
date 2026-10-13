@@ -1,156 +1,93 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+  import "$lib/theme.css";
+  import { onMount } from "svelte";
+  import { commandForShortcut, isEnabled, shortcutOf } from "$lib/commands";
+  import { app } from "$lib/state.svelte";
+  import AboutDialog from "$lib/components/AboutDialog.svelte";
+  import BusyOverlay from "$lib/components/BusyOverlay.svelte";
+  import ConfirmDialog from "$lib/components/ConfirmDialog.svelte";
+  import ContextMenu from "$lib/components/ContextMenu.svelte";
+  import HashDialog from "$lib/components/HashDialog.svelte";
+  import MenuBar from "$lib/components/MenuBar.svelte";
+  import ResultsView from "$lib/components/ResultsView.svelte";
+  import ScanningView from "$lib/components/ScanningView.svelte";
+  import SearchDialog from "$lib/components/SearchDialog.svelte";
+  import SettingsDialog from "$lib/components/SettingsDialog.svelte";
+  import StartView from "$lib/components/StartView.svelte";
+  import StatusBar from "$lib/components/StatusBar.svelte";
+  import Toasts from "$lib/components/Toasts.svelte";
+  import Toolbar from "$lib/components/Toolbar.svelte";
 
-  let name = $state("");
-  let greetMsg = $state("");
+  onMount(() => {
+    app.init();
+  });
 
-  async function greet(event: Event) {
-    event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsg = await invoke("greet", { name });
+  // Replace the browser's own context menu everywhere except text fields.
+  function oncontextmenu(e: MouseEvent) {
+    const t = e.target as HTMLElement;
+    if (!t.closest("input, textarea")) e.preventDefault();
+  }
+
+  // WinDirStat's keyboard accelerators, unless typing or a dialog is open.
+  function onkeydown(e: KeyboardEvent) {
+    if (e.defaultPrevented || app.confirm || app.dialog || app.menu || app.busy) return;
+    const t = e.target as HTMLElement;
+    if (t.closest("input, textarea, select, [contenteditable]")) return;
+    if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) return;
+    const shortcut = shortcutOf(e);
+    // Block browser reload/print/find shortcuts that would break the app.
+    if (["F5", "Ctrl+R", "Ctrl+P", "Ctrl+F", "Ctrl+S", "Ctrl+O", "Ctrl+L", "Ctrl+H", "Ctrl+E", "Ctrl+M", "Ctrl+I"].includes(shortcut)) e.preventDefault();
+    const c = commandForShortcut(shortcut);
+    if (!c) return;
+    e.preventDefault();
+    if (isEnabled(c)) c.run();
   }
 </script>
 
-<main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
+<svelte:window {oncontextmenu} {onkeydown} />
 
-  <div class="row">
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
+<main>
+  <MenuBar />
+  {#if app.settings?.showToolbar !== false}
+    <Toolbar />
+  {/if}
+  <div class="content">
+    {#if app.phase === "start"}
+      <StartView />
+    {:else if app.phase === "scanning"}
+      <ScanningView />
+    {:else}
+      <ResultsView />
+    {/if}
   </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
-
-  <form class="row" onsubmit={greet}>
-    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
-    <button type="submit">Greet</button>
-  </form>
-  <p>{greetMsg}</p>
+  {#if app.phase === "results" && app.settings?.showStatusBar !== false}
+    <StatusBar />
+  {/if}
 </main>
 
+{#if app.dialog?.kind === "settings" && app.settings}
+  <SettingsDialog page={app.dialog.page} />
+{:else if app.dialog?.kind === "hash"}
+  <HashDialog />
+{:else if app.dialog?.kind === "search"}
+  <SearchDialog />
+{:else if app.dialog?.kind === "about"}
+  <AboutDialog />
+{/if}
+
+<ContextMenu />
+<BusyOverlay />
+<ConfirmDialog />
+<Toasts />
+
 <style>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
-
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
+  main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
-
-  a:hover {
-    color: #24c8db;
+  .content {
+    flex: 1;
+    min-height: 0;
   }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
-}
-
 </style>
