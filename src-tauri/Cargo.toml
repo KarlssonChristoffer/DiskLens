@@ -2,6 +2,7 @@
 name = "disklens"
 version.workspace = true
 description = "DiskLens: a modern disk usage analyzer"
+license = "GPL-3.0-or-later"
 edition.workspace = true
 
 [lib]

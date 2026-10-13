@@ -1,9 +1,11 @@
 # How WinDirStat works: REA investigation notes
 
-DiskLens re-implements WinDirStat's core ideas in new code. Before writing it,
-the shipped `WinDirStat.exe` was analysed with
-[REA](https://github.com/morluto/rea) 6.4.0 + Ghidra 12.1.4, and every finding
-was cross-checked against WinDirStat's GPLv3 source at the matching tag.
+DiskLens rebuilds WinDirStat's features. Some parts are new code, but the
+treemap layout, cushion shading and palette handling are direct ports of
+WinDirStat's source. Before writing anything, Claude analysed the shipped
+`WinDirStat.exe` with [REA](https://github.com/morluto/rea) 6.4.0 and Ghidra
+12.1.4. It cross-checked each finding against WinDirStat's open source code
+(GPL-2.0-or-later) at the matching tag.
 
 - **Target:** `C:\Program Files\WinDirStat\WinDirStat.exe`, version 2.5.0, x86-64 PE,
   SHA-256 `cc2bcb73aa81c91f204343dc8698d22fa441e8dc0a4ae6b6492fd5b032d1ab45`

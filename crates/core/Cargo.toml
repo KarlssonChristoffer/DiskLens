@@ -3,6 +3,7 @@ name = "disklens-core"
 version.workspace = true
 edition.workspace = true
 description = "Scanning, treemap and duplicate-detection engine for DiskLens"
+license = "GPL-3.0-or-later"
 
 [dependencies]
 blake3 = "1.8.7"
